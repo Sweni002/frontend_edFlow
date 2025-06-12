@@ -1,1 +1,3 @@
-#06B4BA
+theme : #06B4BA
+footerr : #033638
+
