@@ -1,0 +1,31 @@
+L’enseignement à distance connaît une adoption croissante, mais les outils actuels dédiés à la visioconférence restent souvent trop généraux et peu adaptés aux spécificités des cours en ligne. Plusieurs problèmes majeurs sont fréquemment rencontrés :
+
+    Difficulté à structurer les interactions orales, entraînant des échanges parfois chaotiques entre enseignants et élèves.
+
+    Gestion compliquée des questions posées par les étudiants, sans mécanisme clair de modération ni contrôle.
+
+    Accès peu clair ou désorganisé aux contenus pédagogiques après la séance, limitant la possibilité de revoir les cours.
+
+    Manque d’accessibilité, notamment pour les personnes sourdes ou malentendantes, faute de transcription vocale en temps réel.
+
+    Absence d’adaptation optimale aux différents supports, notamment pour les utilisateurs ne disposant pas d’ordinateur (smartphones, tablettes).
+
+Pour répondre à ces enjeux, notre projet eCourses propose une application web pensée spécifiquement pour les cours en ligne interactifs, structurés et inclusifs. Les principales solutions apportées sont :
+
+    Création de sessions sécurisées accessibles via un code unique, garantissant un contrôle d’accès précis.
+
+    Partage d’écran en direct par l’enseignant, accompagné d’une transcription vocale instantanée pour améliorer l’accessibilité et faciliter le suivi par tous.
+
+    Gestion stricte de la parole : seuls les enseignants peuvent s’exprimer par défaut, tandis que les élèves peuvent envoyer des demandes de prise de parole, validées ou refusées par l’enseignant.
+
+    Mise à disposition d’un espace de commentaires publics pour favoriser des échanges écrits organisés.
+
+    Envoi et partage facile de fichiers pédagogiques (documents texte, PDF, etc.) par l’enseignant durant la session.
+
+   Consultation par les étudiants du résumé ou de la description du cours, pour clarifier les objectifs et contenus.
+
+    Enregistrement complet des séances, incluant la vidéo, les documents et la transcription, afin de permettre aux absents ou retardataires de revoir le cours à tout moment.
+
+    Interface entièrement responsive, garantissant une expérience utilisateur fluide aussi bien sur ordinateur que sur smartphone ou tablette, pour inclure tous les profils d’utilisateurs.
+
+Ainsi, eCourses vise à offrir une solution complète qui rend l’enseignement à distance plus structuré, interactif, accessible et efficace, tout en répondant aux besoins spécifiques des enseignants et étudiants.

@@ -12,3 +12,9 @@ Give students access to recorded lessons and lesson summaries for flexible revie
 
 Support Personalized Learning Experiences
 Adapt the platform to individual needs by offering interactive tools, downloadable materials, and continuous support.
+
+
+Real-Time Transcription with Language Choice
+
+Goal:
+Provide live transcription of the session, allowing participants to choose between English and French, ensuring accessibility and better understanding for all learners.

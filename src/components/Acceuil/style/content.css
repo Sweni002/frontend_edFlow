@@ -65,20 +65,22 @@ body {
     gap: 30px;
 
 }
-
 .btnAcceuil button {
-    
     background-color: #033638;
     border-radius: 8px;
     border: 3px solid #033638;
     align-items: center;
     color: white;
     padding: 17px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-    font-size: 18px;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.2);
+    font-size: 22px;
     font-weight: bold;
     cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
 
+.btnAcceuil button:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Effet sur hover */
 }
 
 .btnAcceuil button:hover {
@@ -173,11 +175,14 @@ body {
        height: 100%;
     }
    
-    .card{
-        flex-direction: column;
-        
-    }
+    .card {
+    flex-direction: column;
     
+    overflow-x: auto;
+    gap: 40px;
+  }
+
+
   
  
 }

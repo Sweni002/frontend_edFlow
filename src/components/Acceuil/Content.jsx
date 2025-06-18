@@ -7,18 +7,28 @@ import Logo2 from "../../assets/img/4.jpg";
 import Logo3 from "../../assets/img/11.jpeg";
 import Logo4 from "../../assets/img/15.jpg";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { TextField, Button } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+
 
 const Content = () => {
+  const navigate=useNavigate()
+
+  const goChoix=()=>{
+      
+    navigate('/choix')
+
+  }
   const { Meta } = Card;
-  const title1 = " Quality of Education";
+  const title1 = "Interactive Live Learning";
   const description1 =
-    "Enable students in all regions to attend live lessons through video, breaking geographical and economic barriers";
-  const title2 = "Encourage Real-Time";
+    "Deliver a real-time learning experience where students can follow the session live, ask questions, and engage directly with the instructor";
+  const title2 = "Seamless Session Access";
   const description2 =
-    "Allow students to ask questions during live sessions, fostering engagement and better understanding.";
-  const title3 = "Provide On-Demand";
+    "Allow users to easily create or join live sessions through a simple, user-friendly interface — no technical setup required.";
+  const title3 = "Controlled Communication";
   const description3 =
-    "Give students access to recorded lessons and lesson summaries for flexible review and self-paced learning.";
+    "Empower session creators to fully manage the flow of interaction by approving questions, handling participant audio/video settings, and keeping the session organized.";
   const title4 = "Support Personalized";
   const description4 =
     "Adapt the platform to individual needs by offering interactive tools, downloadable materials, and continuous support.";
@@ -28,17 +38,16 @@ const Content = () => {
         <div className="imgAcceuil">
           <img src={LogoAcceuil} alt="acceuil" />
           <div className="texte">
-            <h1>
-              Let's transform <br />{" "}
-              <span style={{ color: " #06B4BA" }}>education </span> together
-            </h1>
-            <p>
-              whether you are teacher or studient ,discover <br />a new way to
-              learn together,wherever you are.
-            </p>
+         <h1>
+  Learn and Teach <span style={{ color: "#06B4BA" }}>Live</span>
+</h1>
+<p>
+  Start a session to share your knowledge,<br />
+  or join one to connect, ask, and learn in real time.
+</p>
 
             <div className="btnAcceuil">
-              <button>
+              <button onClick={goChoix}>
                 <i class="fa-solid fa-arrow-right"></i>
                 Get started
               </button>
