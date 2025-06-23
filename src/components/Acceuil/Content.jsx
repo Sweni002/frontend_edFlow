@@ -11,11 +11,17 @@ import { TextField, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
 
-const Content = () => {
+const Content = ({openLoginModal}) => {
   const navigate=useNavigate()
 
   const goChoix=()=>{
-      
+      const token = localStorage.getItem("token");
+     
+       if (!token) {
+        openLoginModal()
+         return ;
+
+         }   
     navigate('/choix')
 
   }

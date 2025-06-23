@@ -30,7 +30,7 @@ body {
 
 .texte {
     position: absolute;
-    top: 18%;
+    top: 28%;
     left: 7%;
     display: flex;
     flex-direction: column;
@@ -73,7 +73,7 @@ body {
     color: white;
     padding: 17px;
     box-shadow: 0 12px 12px rgba(0, 0, 0, 0.2);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
@@ -150,24 +150,23 @@ body {
     }
 
     .texte h1 {
-        font-size: 28px;
+        font-size: 28px !important;
     }
 
     .texte p {
-        font-size: 15px;
+        font-size: 18px !important;
     }
 
-
+   .imgAcceuil {
+    height: 40vh;
+   }
     .btnAcceuil button {
         margin-top: 15px;
         padding: 10px;
         font-size: 15px;
     }
 
-    .imgAcceuil {
-
-        height: 40vh;
-    }
+   
 
     .imgAcceuil img {
         object-fit: cover;
@@ -269,4 +268,40 @@ body {
     color: black;
     margin-top: 10px;
     font-size: 18px;
+}
+
+@media (max-width :1400px) {
+    .texte h1 {
+   
+    font-size: 50px;
+}
+
+.texte p{
+    font-size: 27px;
+}
+.btnAcceuil button{
+    padding:  15px;
+    font-size: 17px;
+}
+ 
+.browser h1{
+ font-size: 35pxeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9;
+}
+}
+
+
+@media (max-width :550px) {
+    .imgAcceuil {
+        height:  30vh !important;
+    }
+    .texte h1{
+        font-size: 25px !important;
+    }
+    .texte p{
+        font-size:  17px !important;
+    }
+    .btnAcceuil button{
+        padding: 10px !important;
+        font-size: 15px  !important;
+    }
 }

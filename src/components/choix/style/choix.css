@@ -19,8 +19,25 @@
   background-color: #000000;
 }
 
-
-
+ .footer {
+  display: flex;
+  align-items: center;
+  margin-top: 240px;
+  margin-right: 45px;
+  
+ }
+  .deconnecter button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+ cursor: pointer;
+ font-weight: bold;
+ text-decoration: underline;
+  }
+  .deconnecter button:hover{
+    color: #06B4BA;
+  }
 .gaucheChoix h1{
     color: rgb(255, 255, 255);
     font-size: 50px;
@@ -75,7 +92,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
+    margin-top:  150px;
 }
 
 
@@ -84,26 +102,97 @@
     margin-top: 20px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 40px;
 
 }
+ .createBtn{
+ display: flex;
+  align-items: center;
+  border: 2px solid #d0d0d0;
+  border-radius: 20px;
+  background-color: white;
+  padding: 5px 20px;
+  border-width: 4px;
+  border-color: white;
+  width: 370px;
+  height: 72px;
+  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.1);
 
+ }
 .btnAcceuilChoix button {
-    
     background-color: #033638;
     border-radius: 30px;
     border: 3px solid #033638;
-    align-items: center;
     color: white;
     padding: 20px;
-    display: flex;
-    gap: 5px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    box-shadow: 0 12px 12px rgba(0, 0, 0, 0.1);
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
 
+    /* Ajouts importants */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
+.inputJoinContainer {
+  display: flex;
+  align-items: center;
+  border: 2px solid #d0d0d0;
+  border-radius: 20px;
+  background-color: white;
+  padding: 5px 20px;
+  border-width: 4px;
+  border-color:#033638;
+  width: 370px;
+  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.1);
+  
+}
+.inputJoinContainer:hover{
+    border-color: #06B4BA;
+    border-width: 4px;
+}
+
+.inputJoinContainer button{
+    padding: 15px;
+    width: auto;
+}
+.inputBox {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap: 15px;
+ 
+}
+.inputBox input {
+    font-size: 20px;
+}
+.iconInput {
+  font-size: 22px;
+  color: #333;
+  margin-right: 10px;
+}
+
+.customInput {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  width: 100%;
+  background: transparent;
+}
+
+.joinBtn {
+  border: none;
+  background: transparent;
+  color: grey;
+  font-size: 16px;
+  cursor: not-allowed;
+  margin-left: 10px;
+}
+
 
 .btnAcceuilChoix button:hover {
     color: #06B4BA;
@@ -138,15 +227,74 @@
 }
 
 @media (max-width :768px) {
+  .logoChoix h1{
+    font-size: 23px !important;
+  }
+  .logoChoix {
+    left : 5% !important ;
+  }
     .droiteChoix {
         display: none !important;
     }
     .gaucheChoix{
         flex: auto;
+       
     }
 
     .gaucheChoix h1{
-        font-size: 40px;
+        font-size: 30px;
     }
-    
+
+  .btnAcceuilChoix{
+
+    flex-direction: column;
+      gap : 14px ;
+      
+  }
+  .inputJoinContainer {
+  
+    width: 300px;
+  }
+    .inputBox input {
+      font-size: 16px;
+    }
+    .btnAcceuilChoix button {
+      padding: 12px;
+      font-size: 18px;
+    }
+    .createBtn {
+    height: 60px;
+ 
+    }
+ 
+    .hbtn {
+      margin-top:  200px;
+    }
+    .footer{
+      margin-left: 40px;
+    }
+
+    .deconnecter button{
+      font-size: 16px;
+    }
+}
+
+@media (max-width :1400px) {
+  .gaucheChoix h1{
+    font-size: 32px;
+  }
+  .inputJoinContainer{
+    width: 300px;
+  }
+  
+  .inputBox{
+    gap: 8px;
+  }
+  .inputBox input{
+    font-size: 16px;
+  }
+  .btnAcceuilChoix button {
+    font-size: 17px;
+  
+  }
 }
