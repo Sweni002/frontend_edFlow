@@ -85,43 +85,50 @@ const fileInputRef = useRef(null);
 
     startMedia();
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setIsSpeechSupported(false);
-      return;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    setIsSpeechSupported(false);
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = true; // continue même après pauses
+  recognition.interimResults = true;
+
+  recognition.onresult = (event) => {
+    let interim = '';
+    let final = finalTranscript;
+
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final += event.results[i][0].transcript + ' ';
+      } else {
+        interim += event.results[i][0].transcript;
+      }
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'fr-FR';
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    setFinalTranscript(final);
+    setInterimTranscript(interim);
+  };
 
-    recognition.onresult = (event) => {
-      let interim = '';
-      let final = finalTranscript;
+  recognition.onerror = (event) => {
+    console.error('Erreur reconnaissance vocale:', event.error);
+  };
 
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript + ' ';
-        } else {
-          interim += event.results[i][0].transcript;
-        }
-      }
+  recognition.onend = () => {
+  if (recognitionRef.current) {
+    recognitionRef.current.start();
+  }
+};
+  recognitionRef.current = recognition;
+  recognition.start();
 
-      setFinalTranscript(final);
-      setInterimTranscript(interim);
-    };
+  return () => {
+   recognition.stop();
+  };;
 
-    recognition.onerror = (event) => {
-      console.error('Erreur reconnaissance vocale:', event.error);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-
-    return () => {
-      if (recognitionRef.current) recognitionRef.current.stop();
-    };
+  
   }, []);
   useEffect(() => {
   if (messageEndRef.current) {
@@ -333,7 +340,13 @@ const stopScreenSharing = () => {
       handleSend();
     }
   };
+useEffect(() => {
+  const timer = setInterval(() => {
+    setFinalTranscript('');
+  }, 15000); // réinitialise toutes les 15 secondes
 
+  return () => clearInterval(timer);
+}, []);
   const docFile = () => {
     setIsCommentActive(false);
     setIsDocActive(true);
@@ -515,6 +528,9 @@ const handleFileUpload = async (event) => {
             muted
             style={{ width: '100%', height: '100%', backgroundColor: 'black', objectFit: 'cover' }}
           />
+           <p style={{ position :"absolute" , bottom : "15%" , right :"50%" }}>
+    <strong> {interimTranscript || finalTranscript}</strong>
+  </p>
           <div className="controle">
             <div className="autres">
               <i
