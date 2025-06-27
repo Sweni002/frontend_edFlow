@@ -1,66 +1,90 @@
 import React, { useEffect, useRef, useState } from 'react';
+import './style/video.css';
+import Logo from '../../assets/img/6.png';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { styled } from "@mui/material/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery'
+import DialogContentText from '@mui/material/DialogContentText';
+import Button from "@mui/material/Button";
+import { Spin } from 'antd';
 
-const MicIcon = ({ muted }) => (
-  muted ? (
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M19 11v2h-2v-2h2zM12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11h2v2H5zM12 21a7 7 0 0 0 7-7h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 7 7z"/>
-    </svg>
-  ) : (
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM5 11h2v2H5zM12 21a7 7 0 0 0 7-7h-2a5 5 0 0 1-10 0H5a7 7 0 0 0 7 7z"/>
-    </svg>
-  )
-);
-
-const CamIcon = ({ off }) => (
-  off ? (
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M17 10.5V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5.5"/>
-      <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2"/>
-    </svg>
-  ) : (
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M17 10.5V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-3.5"/>
-      <polygon points="17 10.5 21 7 21 17 17 13.5"/>
-    </svg>
-  )
-);
-
-const PowerIcon = () => (
-  <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
-    <path d="M12 2v10M6.343 6.343a8 8 0 1 0 11.314 0"/>
-  </svg>
-);
-
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: "white",
+    borderRadius: "30px",
+    padding: theme.spacing(1),
+    width: "100%",
+    maxWidth: "300px", // taille fixe si tu veux limiter la largeur du modal
+  },
+}));
 const VideoCall = () => {
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const recognitionRef = useRef(null);
-
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
   const [inCall, setInCall] = useState(true);
-
-  // On sépare final et interim pour un effet live
-  const [finalTranscript, setFinalTranscript] = useState('');
+    const [finalTranscript, setFinalTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [isSpeechSupported, setIsSpeechSupported] = useState(true);
+  const [isCommentActive, setIsCommentActive] = useState(true);
+  const [isDocActive, setIsDocActive] = useState(false);
+  const [ws, setWs] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+const navigate=useNavigate()
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const recognitionRef = useRef(null);
+ const location = useLocation();
+  const { userId, sessionId } = location.state || {};
+ const [sessionFiles, setSessionFiles] = useState([]);
+const [screenSharing, setScreenSharing] = useState(false);
+const screenTrackRef = useRef(null);
+const messageEndRef = useRef(null);
+const fileInputRef = useRef(null);
+ const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const [loading ,setLoading]=useState(false)
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+    const handleClose = () => {
+    setOpen(false);
+  };
+
+  const goBack=()=>{
+    
+    navigate("/choix")
+
+  }
+  useEffect(() => {
+    if (!location.state?.fromCreate) {
+      // pas autorisé, redirige vers Create
+      navigate('/create', { replace: true });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
-    // Démarre média
+    console.log("User ID:", userId);
+    console.log("Session ID:", sessionId);
+  }, [userId, sessionId]);
+  useEffect(() => {
     const startMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         streamRef.current = stream;
         if (videoRef.current) videoRef.current.srcObject = stream;
       } catch (err) {
-        console.error("Erreur accès caméra/micro :", err);
+        console.error('Erreur caméra/micro :', err);
       }
     };
 
     startMedia();
 
-    // SpeechRecognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       setIsSpeechSupported(false);
@@ -89,20 +113,101 @@ const VideoCall = () => {
     };
 
     recognition.onerror = (event) => {
-      console.error("Erreur reconnaissance vocale:", event.error);
+      console.error('Erreur reconnaissance vocale:', event.error);
     };
 
     recognitionRef.current = recognition;
     recognition.start();
 
     return () => {
-         if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) recognitionRef.current.stop();
     };
   }, []);
+  useEffect(() => {
+  if (messageEndRef.current) {
+    messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+}, [messages]);
+
+useEffect(() => {
+  if (!sessionId) return;
+
+
+  const fetchFiles = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://127.0.0.1:8000/files/${sessionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        const files = await res.json();
+        console.log(files)
+        setSessionFiles(files);
+      } else {
+        console.error("Erreur chargement fichiers");
+      }
+    } catch (error) {
+      console.error("Erreur réseau fichiers :", error);
+    }
+  };
+
+  fetchFiles();
+}, [sessionId]);
+const fetchFiles = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`http://127.0.0.1:8000/files/${sessionId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.ok) {
+      const files = await res.json();
+      setSessionFiles(files);
+    } else {
+      console.error("Erreur chargement fichiers");
+    }
+  } catch (error) {
+    console.error("Erreur réseau fichiers :", error);
+  }
+};
+useEffect(() => {
+  if (sessionId) fetchFiles();
+}, [sessionId]);
+
+useEffect(() => {
+  const fetchMessages = async () => {
+    if (!sessionId) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://127.0.0.1:8000/comments/${sessionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data);console.log("messagsv:" , data)
+   
+      } else {
+        console.error("Erreur de récupération des messages");
+      }
+    } catch (error) {
+      console.error("Erreur réseau lors du chargement des messages :", error);
+    }
+  };
+
+  fetchMessages();
+}, [sessionId]);
+
 
   const stopMedia = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
     if (videoRef.current) {
@@ -122,11 +227,7 @@ const VideoCall = () => {
       audioTrack.enabled = !audioTrack.enabled;
       setMicOn(audioTrack.enabled);
       if (recognitionRef.current) {
-        if (audioTrack.enabled) {
-          recognitionRef.current.start();
-        } else {
-          recognitionRef.current.stop();
-        }
+        audioTrack.enabled ? recognitionRef.current.start() : recognitionRef.current.stop();
       }
     }
   };
@@ -139,154 +240,387 @@ const VideoCall = () => {
       setCamOn(videoTrack.enabled);
     }
   };
+useEffect(() => {
+  if (!userId || !sessionId) return;
+
+  const timer = setTimeout(() => {
+    const socket = new WebSocket(`ws://localhost:8000/ws/chat/${sessionId}/${userId}`);
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket connecté");
+      setWs(socket);
+    };
+
+socket.onmessage = (event) => {
+  try {
+    const data = JSON.parse(event.data);
+    setMessages((prev) => [...prev, data]);
+  } catch {
+    if (event.data === "__fichier_ajoute__") {
+      // ✅ Mise à jour des fichiers en temps réel
+      fetchFiles();
+    } else {
+      setMessages((prev) => [...prev, { user_id: "Système", message: event.data }]);
+    }
+  }
+};
+
+
+
+    socket.onerror = (error) => {
+      console.error("❌ WebSocket erreur :", error);
+    };
+
+    socket.onclose = () => {
+      console.log("❌ WebSocket déconnecté");
+    };
+
+    setWs(socket);
+
+  }, 300); // attendre 300ms avant de créer la WebSocket
+
+  return () => clearTimeout(timer);
+}, [userId, sessionId]);
+
+const handleSend = () => {
+  if (newMessage.trim() !== "" && ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(newMessage.trim());
+    setNewMessage("");
+  }
+};
+
+const shareScreen = async () => {
+  try {
+    if (!screenSharing) {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const screenTrack = screenStream.getVideoTracks()[0];
+      screenTrackRef.current = screenTrack;
+
+      // Affiche le partage dans la vidéo
+      if (videoRef.current) {
+        videoRef.current.srcObject = screenStream;
+      }
+
+      screenTrack.onended = () => {
+        stopScreenSharing();
+      };
+
+      setScreenSharing(true);
+    } else {
+      stopScreenSharing();
+    }
+  } catch (err) {
+    console.error("Erreur de partage d'écran :", err);
+  }
+};
+
+const stopScreenSharing = () => {
+  if (screenTrackRef.current) {
+    screenTrackRef.current.stop();
+    screenTrackRef.current = null;
+  }
+
+  // Revenir à la caméra
+  if (streamRef.current && videoRef.current) {
+    videoRef.current.srcObject = streamRef.current;
+  }
+
+  setScreenSharing(false);
+};
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
+
+  const docFile = () => {
+    setIsCommentActive(false);
+    setIsDocActive(true);
+  };
+
+  const commentAct = () => {
+    setIsCommentActive(true);
+    setIsDocActive(false);
+  };
 
   if (!inCall)
     return (
-      <div style={{ textAlign: 'center', padding: 20, color: '#222' }}>
+      <div style={{ textAlign: 'center', padding: 20 }}>
         <h2>👋 Vous avez quitté l'appel.</h2>
       </div>
     );
+const handleFileUpload = async (event) => {
+  const selectedFiles = event.target.files;
+  if (!selectedFiles.length) return;
 
+  const formData = new FormData();
+  for (let i = 0; i < selectedFiles.length; i++) {
+    formData.append("files", selectedFiles[i]);
+  }
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/files/upload-multiple/${sessionId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (response.ok) {
+      const uploadedFiles = await response.json();
+      setSessionFiles((prev) => [...prev, ...uploadedFiles]);
+  // ✅ Notifier les autres participants
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send("__fichier_ajoute__");
+  }
+    } else {
+      console.error("Erreur lors de l'envoi des fichiers");
+    }
+  } catch (err) {
+    console.error("Erreur réseau :", err);
+  }
+};
+ const deconnexion=()=>{
+  setOpen(true)
+ }
   return (
-    <div
-      style={{
-        position: 'relative',
-       width: '100%',
-        maxWidth: 900,
-        margin: '0 auto',
-        borderRadius: 10,
-        overflow: 'hidden',
-        backgroundColor: '#000',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.6)',
-        color: '#fff',
-        fontFamily: 'Arial, sans-serif',
-      }}
-    >
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        style={{ width: '100%', height: 'auto', backgroundColor: 'black' }}
-      />
-
-      {/* Sous-titres style YouTube en bas de la vidéo */}
-      <div
-        aria-live="polite"
-        style={{
-          position: 'absolute',
-          bottom: 70,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          maxWidth: '90%',
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          padding: '10px 20px',
-          borderRadius: 20,
-          fontSize: 18,
-          color: '#fff',
-          textAlign: 'center',
-          textShadow: '0 0 5px black',
-          userSelect: 'none',
-          pointerEvents: 'none',
-          whiteSpace: 'pre-wrap',
-          minHeight: 40,
-          maxHeight: 80,
-          overflowY: 'auto',
-          fontWeight: 'bold',
-        }}
-      >
-        <span>{finalTranscript}</span>
-        <span style={{ color: '#aaf', fontStyle: 'italic' }}>{interimTranscript}</span>
+    <div className="videoFlex">
+      <div className="chat">
+        <div className="fixer">
+          <div className="entete">
+              <div className="logoChoix">
+        <div>
+          <img src={Logo} alt="" />
+          <h1>ecourses</h1>
+        </div>
       </div>
+      
+          </div>
+          <div className="menu">
+            <div
+              className={`comment-icon-wrapper ${isCommentActive ? 'active' : ''}`}
+              onClick={commentAct}
+            >
+              <i className="fa-regular fa-comment" style={{fontSize : 21}}></i>
+            </div>
+            <div
+              className={`comment-icon-wrapper ${isDocActive ? 'active' : ''}`}
+              onClick={docFile}
+            >
+              <i className="fa-regular fa-file-lines" style={{fontSize : 21}}></i>
+            </div>
+          </div>
+        </div>
+   {isCommentActive && (
+     <div className="messages-area">
+{messages.map((msg, idx) => (
+  <div
+    key={idx}
+    className={`message ${
+      msg.user_id.toString() === userId.toString() ? 'own-message' : 'received-message'
+    }`}
+  >
+    {msg.user_id.toString() !== userId.toString() && (
+      <strong style={{ color: 'cyan', marginRight: 4 }}>
+        @{msg.user_name}:
+      </strong>
+    )}
+    {msg.message}
+    <div style={{ fontSize: '0.7rem', color: 'lightgrey' }}>
+      {msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : ''}
+    </div>
+  </div>
+))}
 
-      {/* Barre de contrôle */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          padding: '10px 0',
-          backdropFilter: 'blur(10px)',
-          backgroundColor: 'rgba(0,0,0,0.4)',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 30,
-          alignItems: 'center',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
-        }}
-      >
-        {/* Bouton Micro */}
-        <button
-          onClick={toggleMic}
-          aria-label={micOn ? 'Couper le micro' : 'Activer le micro'}
-          style={{
-            backgroundColor: micOn ? '#10b981' : '#555',
-            border: 'none',
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: micOn ? '#fff' : '#ccc',
-            transition: 'all 0.3s ease',
-            boxShadow: micOn ? '0 0 10px #10b981' : 'none',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <MicIcon muted={!micOn} />
-        </button>
 
-        {/* Bouton Quitter */}
-        <button
-          onClick={stopMedia}
-          aria-label="Quitter l'appel"
-          style={{
-            backgroundColor: '#ef4444',
-            border: 'none',
-            width: 60,
-            height: 60,
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            boxShadow: '0 0 12px #ef4444',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <PowerIcon />
-        </button>
+  <div ref={messageEndRef} />
+</div>
 
-        {/* Bouton Caméra */}
+        )}
+
+
+{isDocActive && (
+  <div className="files-container">
+    {sessionFiles.length > 0 ? (
+      sessionFiles.map((file) => (
+        <div key={file.id} className="file-item">
+          <a
+            href={`http://127.0.0.1:8000/${file.file_path}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{color :"white"}}
+          >
+            <i class="fa-solid fa-circle-down" style={{color : "white" , paddingRight : 10}}></i>{file.filename}
+          </a>
+        </div>
+      ))
+    ) : (
+      <div className="no-files"> No documents shared yet.</div>
+    )}
+  </div>
+)}
+
+     <div className="bottomBar">
+  {isCommentActive && (
+    <>
+      <input
+        type="text"
+        placeholder="Send message"
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <div className="sent" onClick={handleSend}>
+        <i className="fa-regular fa-paper-plane"></i>
+        
+      </div>
+    </>
+  )}
+
+  {isDocActive && (
+    <div className="sent" onClick={() => fileInputRef.current.click()}>
+      <i className="fa-solid fa-plus" title="Ajouter un fichier"></i>
+      <span>Add files</span>
+      <input
+  type="file"
+  multiple
+  style={{ display: 'none' }}
+  ref={fileInputRef}
+  onChange={handleFileUpload}
+/>
+
+    </div>
+    
+  )}
+</div>
+     </div>
+   
+      <div className="videoC">
         <button
-          onClick={toggleCam}
-          aria-label={camOn ? 'Couper la caméra' : 'Activer la caméra'}
-          style={{
-            backgroundColor: camOn ? '#3b82f6' : '#555',
-            border: 'none',
-            width: 52,
-            height: 52,
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: camOn ? '#fff' : '#ccc',
-            transition: 'all 0.3s ease',
-            boxShadow: camOn ? '0 0 10px #3b82f6' : 'none',
+  onClick={deconnexion}
+>
+  <i className="fa-solid fa-right-from-bracket" style={{ marginRight: 6 }}></i>
+  Exit
+</button>
+
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{ width: '100%', height: '100%', backgroundColor: 'black', objectFit: 'cover' }}
+          />
+          <div className="controle">
+            <div className="autres">
+              <i
+                className={micOn ? 'fa-solid fa-microphone' : 'fa-solid fa-microphone-slash'}
+                onClick={toggleMic}
+                title={micOn ? 'Couper le micro' : 'Activer le micro'}
+              />
+           <i
+  className="fa-solid fa-rectangle-list"
+  title={screenSharing ? "Arrêter le partage d'écran" : "Partager l'écran"}
+  onClick={shareScreen}
+  style={{ cursor: 'pointer' }}
+/>
+    <div className="rouge" onClick={stopMedia} title="Terminer l'appel">
+                <i className="fa-solid fa-phone" />
+              </div>
+              <i
+                className={camOn ? 'fa-solid fa-video' : 'fa-solid fa-video-slash'}
+                onClick={toggleCam}
+                title={camOn ? 'Couper la caméra' : 'Activer la caméra'}
+              />
+            </div>
+          </div>
+        </div>
+         <BootstrapDialog
+                  open={open}
+                onClose={handleClose}
+               aria-labelledby="customized-dialog-title"
+                  >   
+                         <div className={{ display :"flex" , justifyContent :"center"}}>
+                   </div>
+                    <div style={{display :"flex" ,width :"100%" ,
+                      alignItems :"center" ,justifyContent :"flex-end"
+                    }}>
+                 
+               </div>
+                <DialogTitle id="responsive-dialog-title">
+                  <h3>Existing...
+                    </h3>
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                  <div>
+                    <p style={{marginTop :4 , fontSize : 19}}>Are you sure to quit ?</p>
+                  </div>
+                          </DialogContentText>
+                </DialogContent>
+               <DialogActions  sx={{ justifyContent: "flex-end",display :'flex'   ,
+                alignItems :"center" ,width : "100%"
+               }}>
+            <Button
+          variant="outlined"
+          sx={{
+            width: "20%",
+            color : "gray" ,
+            backgroundColor: "transparent",
+            fontWeight: "bold",
+            fontSize: 18,
+            borderRadius : 30 ,
+            border :"none",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "white",
+              color :"#06B4BA",
+              opacity :5  ,
+              borderRadius :30
+            },
           }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+      onClick={handleClose}
         >
-          <CamIcon off={!camOn} />
-        </button>
+        No
+          
+        
+        </Button>
+                <Button
+          variant="outlined"
+          sx={{
+            width: "20%",
+            color : "#022c2e" ,
+            backgroundColor: "transparent",
+            fontWeight: "bold",
+            fontSize: 18,
+            paddingY: 1.5 ,
+            borderRadius : 30 ,
+            border :"none",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#dcfbfc",
+              opacity :5  ,
+              borderRadius :30
+            },
+          }}
+      onClick={goBack}
+        >
+            {loading ? <Spin size="default" /> : (
+    <>
+        Yes
+    </>
+  )}
+      
+          
+        
+        </Button>
+                     </DialogActions>
+              </BootstrapDialog>
+               
       </div>
     </div>
   );

@@ -203,7 +203,7 @@
     font-size: 20px;
   }
   
-.entete{
+.entetes{
      width: 100%;
      display: flex;
      justify-content: center;
@@ -212,7 +212,7 @@
 
 }
 
-  .entete h1{
+  .entetes h1{
     color:#033638 ;
     text-align: center;
     font-size: 30px;

@@ -255,7 +255,7 @@ const handleSignin = async () => {
           aria-labelledby="customized-dialog-title"
               open={openLogin}
         >
-          <div className="entete">
+          <div className="entetes">
             <h1>Sign up</h1>
             <div className="siginin">
               <p style={{ textAlign: "center" }}>
@@ -319,7 +319,7 @@ const handleSignin = async () => {
           aria-labelledby="customized-dialog-title"
           open={openSign}
         >
-          <div className="entete">
+          <div className="entetes">
             <h1>Sign in</h1>
             <div className="siginin">
               <p style={{ textAlign: "center" }}>

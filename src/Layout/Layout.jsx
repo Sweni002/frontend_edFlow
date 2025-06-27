@@ -6,15 +6,22 @@ import Choix from "../components/choix/Choix";
 import Create from "../components/create/Create";
 import VideoCall from "../components/create/VideoCall";
 import RequireAuth from "../RequireAuth";
+import Joindre from "../components/joindre/Joindre";
 
 const Layout=()=> {
 
   return  <>
           <Routes>
             <Route path="/" element={<Acceuil />}></Route>
+            
        <Route path="/choix" element={
         <RequireAuth>
           <Choix />
+        </RequireAuth>
+      } />
+        <Route path="/joign" element={
+        <RequireAuth>
+          <Joindre />
         </RequireAuth>
       } />
       <Route path="/create" element={

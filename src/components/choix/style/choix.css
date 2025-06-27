@@ -41,6 +41,7 @@
 .gaucheChoix h1{
     color: rgb(255, 255, 255);
     font-size: 50px;
+    user-select: none;
 }
 
 .droiteChoix {
@@ -59,12 +60,12 @@
     height: 100%;
 }
 
-.logoChoix{
+.logoChoixs{
     position: absolute;
     top : 1% ;
     left: 2%;
     width: auto;
-  height: 80px;
+  height: 70px;
   justify-content: center;
    display: flex;
      align-items: center;
@@ -73,19 +74,19 @@
 
 }
 
-.logoChoix img{
+.logoChoixs img{
        object-fit: cover;
     width: 100%;
     height: 100%;
    
 }
 
-.logoChoix h1{
+.logoChoixs h1{
         color: #06B4BA;
     font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     margin-bottom: 17px;
-    font-size: 35px;
-
+    font-size: 30px;
+  user-select: none;
 }
 
 .hbtn{
